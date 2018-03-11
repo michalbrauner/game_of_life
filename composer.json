@@ -1,0 +1,20 @@
+{
+  "name": "michalbrauner/game_of_life",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Michal Brauner",
+      "email": "michal.br@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "GameOfLife\\": "src/GameOfLife"
+    }
+  },
+  "require": {},
+  "require-dev": {
+    "mockery/mockery": "dev-master",
+    "phpunit/phpunit": "^6.5"
+  }
+}
