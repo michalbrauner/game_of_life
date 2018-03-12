@@ -10,28 +10,38 @@ class Grid
     /**
      * @var array
      */
-    private $grid;
+    private $grid = [];
 
     /**
      * @param int $sizeX
      * @param int $sizeY
+     * @param array $aliveCellsMap
      */
-    public function __construct(int $sizeX, int $sizeY)
+    public function __construct(int $sizeX, int $sizeY, array $aliveCellsMap)
     {
-        $this->createGrid($sizeX, $sizeY);
+        $this->createGrid($sizeX, $sizeY, $aliveCellsMap);
     }
 
     /**
      * @param int $x
      * @param int $y
+     * @param array $aliveCellsMap
      */
-    private function createGrid(int $x, int $y): void
+    private function createGrid(int $x, int $y, array $aliveCellsMap): void
     {
+        if ($x == 0 || $y == 0) {
+            return;
+        }
+
         for ($positionX = 0; $positionX < $x; $positionX++) {
             $this->grid[$positionX] = [];
 
             for ($positionY = 0; $positionY < $y; $positionY++) {
-                $this->grid[$positionX][$positionY] = new Cell(CellInterface::STATE_DEAD, $positionX, $positionY);
+                $cellState = isset($aliveCellsMap[$positionX]) && isset($aliveCellsMap[$positionX][$positionY])
+                    ? CellInterface::STATE_ALIVE
+                    : CellInterface::STATE_DEAD;
+
+                $this->grid[$positionX][$positionY] = new Cell($cellState, $positionX, $positionY);
             }
         }
     }
@@ -39,7 +49,7 @@ class Grid
     /**
      * @return Generator|CellInterface[]
      */
-    public function getCells()
+    public function getCells(): Generator
     {
         foreach ($this->grid as $itemsOnXLine) {
             foreach ($itemsOnXLine as $cell) {
@@ -51,27 +61,10 @@ class Grid
     /**
      * @param int $x
      * @param int $y
-     * @return CellInterface[]
+     * @return Generator|CellInterface[]
      */
-    public function getAliveNeighbours(int $x, int $y): array
+    public function getAliveNeighbours(int $x, int $y): Generator
     {
-        return array_filter(
-            $this->getNeighbours($x, $y),
-            function (Cell $cell) {
-                return $cell->isAlive();
-            }
-        );
-    }
-
-    /**
-     * @param int $x
-     * @param int $y
-     * @return CellInterface[]
-     */
-    public function getNeighbours(int $x, int $y): array
-    {
-        $neighbours = [];
-
         $coordinatesOfNeighbours = $this->getCoordinatesOfNeighbours($x, $y);
 
         foreach ($coordinatesOfNeighbours as $coordinate) {
@@ -79,11 +72,15 @@ class Grid
             $coordinateY = $coordinate[1];
 
             if (isset($this->grid[$coordinateX]) && isset($this->grid[$coordinateX][$coordinateY])) {
-                $neighbours[] = $this->grid[$coordinateX][$coordinateY];
+
+                /** @var CellInterface $cell */
+                $cell = $this->grid[$coordinateX][$coordinateY];
+
+                if ($cell->isAlive()) {
+                    yield $this->grid[$coordinateX][$coordinateY];
+                }
             }
         }
-
-        return $neighbours;
     }
 
     /**
