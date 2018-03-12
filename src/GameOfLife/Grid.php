@@ -2,6 +2,8 @@
 
 namespace GameOfLife;
 
+use Generator;
+
 class Grid
 {
 
@@ -22,25 +24,57 @@ class Grid
     /**
      * @param int $x
      * @param int $y
+     */
+    private function createGrid(int $x, int $y): void
+    {
+        for ($positionX = 0; $positionX < $x; $positionX++) {
+            $this->grid[$positionX] = [];
+
+            for ($positionY = 0; $positionY < $y; $positionY++) {
+                $this->grid[$positionX][$positionY] = new Cell(CellInterface::STATE_DEAD, $positionX, $positionY);
+            }
+        }
+    }
+
+    /**
+     * @return Generator|CellInterface[]
+     */
+    public function getCells()
+    {
+        foreach ($this->grid as $itemsOnXLine) {
+            foreach ($itemsOnXLine as $cell) {
+                yield $cell;
+            }
+        }
+    }
+
+    /**
+     * @param int $x
+     * @param int $y
+     * @return CellInterface[]
+     */
+    public function getAliveNeighbours(int $x, int $y): array
+    {
+        return array_filter(
+            $this->getNeighbours($x, $y),
+            function (Cell $cell) {
+                return $cell->isAlive();
+            }
+        );
+    }
+
+    /**
+     * @param int $x
+     * @param int $y
      * @return CellInterface[]
      */
     public function getNeighbours(int $x, int $y): array
     {
         $neighbours = [];
 
-        $coordinatesOfNeighbours = [
-            [$x - 1, $y - 1],
-            [$x, $y - 1],
-            [$x + 1, $y - 1],
-            [$x - 1, $y],
-            [$x + 1, $y],
-            [$x - 1, $y + 1],
-            [$x, $y + 1],
-            [$x + 1, $y + 1],
-        ];
+        $coordinatesOfNeighbours = $this->getCoordinatesOfNeighbours($x, $y);
 
-        foreach ($coordinatesOfNeighbours as $coordinate)
-        {
+        foreach ($coordinatesOfNeighbours as $coordinate) {
             $coordinateX = $coordinate[0];
             $coordinateY = $coordinate[1];
 
@@ -55,16 +89,20 @@ class Grid
     /**
      * @param int $x
      * @param int $y
+     * @return array
      */
-    private function createGrid(int $x, int $y): void
+    private function getCoordinatesOfNeighbours(int $x, int $y): array
     {
-        for ($positionX = 0; $positionX < $x; $positionX++) {
-            $this->grid[$positionX] = [];
-
-            for ($positionY = 0; $positionY < $y; $positionY++) {
-                $this->grid[$positionX][$positionY] = new Cell(CellInterface::STATE_DEAD, $positionX, $positionY);
-            }
-        }
+        return [
+            [$x - 1, $y - 1],
+            [$x, $y - 1],
+            [$x + 1, $y - 1],
+            [$x - 1, $y],
+            [$x + 1, $y],
+            [$x - 1, $y + 1],
+            [$x, $y + 1],
+            [$x + 1, $y + 1],
+        ];
     }
 
 }

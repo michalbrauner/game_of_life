@@ -33,17 +33,33 @@ class Cell implements CellInterface
     /**
      * @inheritdoc
      */
-    public function updateStateForNextIteration(Grid $grid): void
+    public function updateStateForNextIteration(array $aliveNeighbours): void
     {
-        $this->state = self::STATE_DEAD;
+        $numberOfAliveNeighbours = count($aliveNeighbours);
+
+        if ($this->state === self::STATE_DEAD && $this->shouldBecomeAlive($numberOfAliveNeighbours)) {
+            $this->state = self::STATE_ALIVE;
+        } elseif ($this->state === self::STATE_ALIVE && $this->shouldDie($numberOfAliveNeighbours)) {
+            $this->state = self::STATE_DEAD;
+        }
     }
 
     /**
-     * @inheritdoc
+     * @param int $numberOfAliveNeighbours
+     * @return bool
      */
-    public function isAlive(): bool
+    private function shouldBecomeAlive(int $numberOfAliveNeighbours): bool
     {
-        return $this->state === self::STATE_ALIVE;
+        return $numberOfAliveNeighbours === 3;
+    }
+
+    /**
+     * @param int $numberOfAliveNeighbours
+     * @return bool
+     */
+    private function shouldDie(int $numberOfAliveNeighbours): bool
+    {
+        return $numberOfAliveNeighbours < 2 || $numberOfAliveNeighbours > 3;
     }
 
     /**
@@ -60,6 +76,14 @@ class Cell implements CellInterface
     public function getPositionY(): int
     {
         return $this->positionY;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAlive(): bool
+    {
+        return $this->state === self::STATE_ALIVE;
     }
 
 }

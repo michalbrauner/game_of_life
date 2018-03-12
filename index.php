@@ -4,5 +4,5 @@ use GameOfLife\World;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$world = new World(10, 10);
-$world->run(5);
+$world = new World(5, 5);
+$world->run(2);

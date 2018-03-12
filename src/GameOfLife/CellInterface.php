@@ -16,9 +16,9 @@ interface CellInterface
     public function __construct(string $state, int $positionX, int $positionY);
 
     /**
-     * @param Grid $grid
+     * @param CellInterface[] $aliveNeighbours
      */
-    public function updateStateForNextIteration(Grid $grid): void;
+    public function updateStateForNextIteration(array $aliveNeighbours): void;
 
     /**
      * @return bool

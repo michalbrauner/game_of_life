@@ -24,7 +24,17 @@ class World
      */
     public function run(int $numberOfIterations)
     {
+        for ($iteration = 1; $iteration <= $numberOfIterations; $iteration++) {
+            $this->grid->getCells()->rewind();
 
+            foreach ($this->grid->getCells() as $cell) {
+                $cell->updateStateForNextIteration(
+                    $this->grid->getAliveNeighbours($cell->getPositionX(), $cell->getPositionX())
+                );
+            }
+        }
     }
+
+
 
 }
