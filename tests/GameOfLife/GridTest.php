@@ -1,7 +1,10 @@
 <?php
 
-namespace GameOfLife;
+namespace Tests\GameOfLife;
 
+use GameOfLife\CellInterface;
+use GameOfLife\CellsPositionsMap;
+use GameOfLife\Grid;
 use Generator;
 use PHPUnit\Framework\TestCase;
 
@@ -10,7 +13,7 @@ class GridTest extends TestCase
 
     public function testGetCellsWithMoreCalls()
     {
-        $grid = new Grid(2, 2, []);
+        $grid = new Grid(2, 2, new CellsPositionsMap([]));
 
         $positions1 = $this->getPositionsFromCellsGenerator($grid->getCells());
         $this->assertCount(4, $positions1);
@@ -28,7 +31,7 @@ class GridTest extends TestCase
      */
     public function testGetCells(array $expectedPositions, int $sizeX, int $sizeY)
     {
-        $grid = new Grid($sizeX, $sizeY, []);
+        $grid = new Grid($sizeX, $sizeY, new CellsPositionsMap([]));
 
         $positions = $this->getPositionsFromCellsGenerator($grid->getCells());
 
@@ -81,15 +84,15 @@ class GridTest extends TestCase
      * @param array $expectedNeighbourPositions
      * @param int $cellPositionX
      * @param int $cellPositionY
-     * @param array $aliveCellsMap
+     * @param CellsPositionsMap $aliveCellsPositionsMap
      */
     public function testGetAliveNeighbours(
         array $expectedNeighbourPositions,
         int $cellPositionX,
         int $cellPositionY,
-        array $aliveCellsMap
+        CellsPositionsMap $aliveCellsPositionsMap
     ) {
-        $grid = new Grid(5, 5, $aliveCellsMap);
+        $grid = new Grid(5, 5, $aliveCellsPositionsMap);
 
         $neighboursPositions = $this->getPositionsFromCellsGenerator(
             $grid->getAliveNeighbours($cellPositionX, $cellPositionY)
@@ -122,7 +125,7 @@ class GridTest extends TestCase
                 $allNeighboursPositions,
                 2,
                 2,
-                $this->mapPositionsToAliveCellsMap($allNeighboursPositions),
+                new CellsPositionsMap($allNeighboursPositions),
             ],
             'Cell have only one alive neighbours' => [
                 [
@@ -130,62 +133,37 @@ class GridTest extends TestCase
                 ],
                 2,
                 2,
-                [
-                    2 => [
-                        1 => true,
-                        3 => true,
-                    ],
-                    3 => [
-                        3 => true,
-                    ],
-                ],
+                new CellsPositionsMap(
+                    [
+                        [2, 1], [2, 3], [3, 3],
+                    ]
+                ),
             ],
             'Cell is in top left corner of grid, all cells are alive' => [
                 $neighboursTopLeftCorner,
                 0,
                 0,
-                $this->mapPositionsToAliveCellsMap($neighboursTopLeftCorner),
+                new CellsPositionsMap($neighboursTopLeftCorner),
             ],
             'Cell is in bottom left corner of grid, all cells are alive' => [
                 $neighboursBottomLeftCorner,
                 0,
                 4,
-                $this->mapPositionsToAliveCellsMap($neighboursBottomLeftCorner),
+                new CellsPositionsMap($neighboursBottomLeftCorner),
             ],
             'Cell is in top right corner of grid, all cells are alive' => [
                 $neighboursTopRightCorner,
                 4,
                 0,
-                $this->mapPositionsToAliveCellsMap($neighboursTopRightCorner),
+                new CellsPositionsMap($neighboursTopRightCorner),
             ],
             'Cell is in bottom right corner of grid, all cells are alive' => [
                 $neighboursBottomRightCorner,
                 4,
                 4,
-                $this->mapPositionsToAliveCellsMap($neighboursBottomRightCorner),
+                new CellsPositionsMap($neighboursBottomRightCorner),
             ],
         ];
-    }
-
-    /**
-     * @param array $positions
-     * @return array
-     */
-    private function mapPositionsToAliveCellsMap(array $positions): array
-    {
-        $aliveCellsMap = [];
-
-        foreach ($positions as $position) {
-            if (!isset($aliveCellsMap[$position[0]])) {
-                $aliveCellsMap[$position[0]] = [];
-            }
-
-            if (!isset($aliveCellsMap[$position[0]][$position[1]])) {
-                $aliveCellsMap[$position[0]][$position[1]] = true;
-            }
-        }
-
-        return $aliveCellsMap;
     }
 
     /**

@@ -16,7 +16,7 @@ class World
      */
     public function __construct(int $initialSizeX, int $initialSizeY)
     {
-        $this->grid = new Grid($initialSizeX, $initialSizeY, []);
+        $this->grid = new Grid($initialSizeX, $initialSizeY, new CellsPositionsMap([]));
     }
 
     /**
@@ -32,9 +32,9 @@ class World
     private function updateGrid(): void
     {
         foreach ($this->grid->getCells() as $cell) {
-            $cell->updateStateForNextIteration(
-                $this->grid->getAliveNeighbours($cell->getPositionX(), $cell->getPositionY())
-            );
+            $aliveNeighbours = $this->grid->getAliveNeighbours($cell->getPositionX(), $cell->getPositionY());
+
+            $cell->updateStateForNextIteration(count($aliveNeighbours));
         }
     }
 

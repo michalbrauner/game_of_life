@@ -33,10 +33,8 @@ class Cell implements CellInterface
     /**
      * @inheritdoc
      */
-    public function updateStateForNextIteration(array $aliveNeighbours): void
+    public function updateStateForNextIteration(int $numberOfAliveNeighbours): void
     {
-        $numberOfAliveNeighbours = count($aliveNeighbours);
-
         if ($this->state === self::STATE_DEAD && $this->shouldBecomeAlive($numberOfAliveNeighbours)) {
             $this->state = self::STATE_ALIVE;
         } elseif ($this->state === self::STATE_ALIVE && $this->shouldDie($numberOfAliveNeighbours)) {

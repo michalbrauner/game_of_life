@@ -15,19 +15,19 @@ class Grid
     /**
      * @param int $sizeX
      * @param int $sizeY
-     * @param array $aliveCellsMap
+     * @param CellsPositionsMap $aliveCellsPositionsMap
      */
-    public function __construct(int $sizeX, int $sizeY, array $aliveCellsMap)
+    public function __construct(int $sizeX, int $sizeY, CellsPositionsMap $aliveCellsPositionsMap)
     {
-        $this->createGrid($sizeX, $sizeY, $aliveCellsMap);
+        $this->createGrid($sizeX, $sizeY, $aliveCellsPositionsMap);
     }
 
     /**
      * @param int $x
      * @param int $y
-     * @param array $aliveCellsMap
+     * @param CellsPositionsMap $aliveCellsPositionsMap
      */
-    private function createGrid(int $x, int $y, array $aliveCellsMap): void
+    private function createGrid(int $x, int $y, CellsPositionsMap $aliveCellsPositionsMap): void
     {
         if ($x == 0 || $y == 0) {
             return;
@@ -37,7 +37,7 @@ class Grid
             $this->grid[$positionX] = [];
 
             for ($positionY = 0; $positionY < $y; $positionY++) {
-                $cellState = isset($aliveCellsMap[$positionX]) && isset($aliveCellsMap[$positionX][$positionY])
+                $cellState = $aliveCellsPositionsMap->positionExists($positionX, $positionY)
                     ? CellInterface::STATE_ALIVE
                     : CellInterface::STATE_DEAD;
 
@@ -65,9 +65,9 @@ class Grid
      */
     public function getAliveNeighbours(int $x, int $y): Generator
     {
-        $coordinatesOfNeighbours = $this->getCoordinatesOfNeighbours($x, $y);
+        $positionsOfNeighbours = $this->getCoordinatesOfNeighbours($x, $y);
 
-        foreach ($coordinatesOfNeighbours as $coordinate) {
+        foreach ($positionsOfNeighbours->getCellsPositions() as $coordinate) {
             $coordinateX = $coordinate[0];
             $coordinateY = $coordinate[1];
 
@@ -86,20 +86,22 @@ class Grid
     /**
      * @param int $x
      * @param int $y
-     * @return array
+     * @return CellsPositionsMap
      */
-    private function getCoordinatesOfNeighbours(int $x, int $y): array
+    private function getCoordinatesOfNeighbours(int $x, int $y): CellsPositionsMap
     {
-        return [
-            [$x - 1, $y - 1],
-            [$x, $y - 1],
-            [$x + 1, $y - 1],
-            [$x - 1, $y],
-            [$x + 1, $y],
-            [$x - 1, $y + 1],
-            [$x, $y + 1],
-            [$x + 1, $y + 1],
-        ];
+        return new CellsPositionsMap(
+            [
+                [$x - 1, $y - 1],
+                [$x, $y - 1],
+                [$x + 1, $y - 1],
+                [$x - 1, $y],
+                [$x + 1, $y],
+                [$x - 1, $y + 1],
+                [$x, $y + 1],
+                [$x + 1, $y + 1],
+            ]
+        );
     }
 
 }
