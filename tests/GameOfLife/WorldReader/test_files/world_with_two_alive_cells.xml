@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<World sizeX="5" sizeY="5">
+    <AliveCells>
+        <Cell positionX="2" positionY="2" />
+        <Cell positionX="2" positionY="3" />
+    </AliveCells>
+</World>

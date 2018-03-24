@@ -10,18 +10,11 @@ class World
      */
     private $grid;
 
-    /**
-     * @param int $initialSizeX
-     * @param int $initialSizeY
-     */
-    public function __construct(int $initialSizeX, int $initialSizeY)
+    public function __construct(int $initialSizeX, int $initialSizeY, CellsPositionsMap $aliveCellsPositions)
     {
-        $this->grid = new Grid($initialSizeX, $initialSizeY, new CellsPositionsMap([]));
+        $this->grid = new Grid($initialSizeX, $initialSizeY, $aliveCellsPositions);
     }
 
-    /**
-     * @param int $numberOfIterations
-     */
     public function run(int $numberOfIterations)
     {
         for ($iteration = 1; $iteration <= $numberOfIterations; $iteration++) {
@@ -36,6 +29,11 @@ class World
 
             $cell->updateStateForNextIteration(count($aliveNeighbours));
         }
+    }
+
+    public function getGrid(): Grid
+    {
+        return $this->grid;
     }
 
 }

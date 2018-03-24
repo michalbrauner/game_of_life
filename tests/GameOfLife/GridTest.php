@@ -189,10 +189,10 @@ class GridTest extends TestCase
     }
 
     /**
-     * @param Generator $cellsGenerator
+     * @param CellInterface[] $cells
      * @return array
      */
-    private function getPositionsFromCellsGenerator(Generator $cellsGenerator): array
+    private function getPositionsFromCellsGenerator(array $cells): array
     {
         return array_map(
             function (CellInterface $cell) {
@@ -201,7 +201,7 @@ class GridTest extends TestCase
                     $cell->getPositionY(),
                 ];
             },
-            iterator_to_array($cellsGenerator)
+            $cells
         );
     }
 

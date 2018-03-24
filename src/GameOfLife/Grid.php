@@ -61,10 +61,12 @@ class Grid
     /**
      * @param int $x
      * @param int $y
-     * @return Generator|CellInterface[]
+     * @return CellInterface[]
      */
-    public function getAliveNeighbours(int $x, int $y): Generator
+    public function getAliveNeighbours(int $x, int $y): array
     {
+        $aliveNeighbours = [];
+
         $positionsOfNeighbours = $this->getCoordinatesOfNeighbours($x, $y);
 
         foreach ($positionsOfNeighbours->getCellsPositions() as $coordinate) {
@@ -77,10 +79,12 @@ class Grid
                 $cell = $this->grid[$coordinateX][$coordinateY];
 
                 if ($cell->isAlive()) {
-                    yield $this->grid[$coordinateX][$coordinateY];
+                    $aliveNeighbours[] = $this->grid[$coordinateX][$coordinateY];
                 }
             }
         }
+
+        return $aliveNeighbours;
     }
 
     /**
